@@ -13,10 +13,9 @@ import GCDWebServer
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    let server = GCDWebServer()
-
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+    var webServer: GCDWebServer?
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
         setupWebserver()
         return true
     }
@@ -46,18 +45,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
     func setupWebserver() {
-        server.addHandlerForMethod("GET", path: "/", requestClass: GCDWebServerDataRequest.self, processBlock: {
+        print("setupWebserver")
+        
+        webServer = GCDWebServer()
+        guard let server = webServer else {
+            return
+        }
+        
+        server.addHandler(forMethod: "GET", path: "/", request: GCDWebServerDataRequest.self, processBlock: {
             request in
-            return GCDWebServerDataResponse(HTML: "Hello, world, from iOS. Device “\(UIDevice.currentDevice().name)” running at address \(self.server.serverURL)")
+            return GCDWebServerDataResponse(html: "Hello, world, from iOS. Device “\(UIDevice.current.name)” running at address \(server.serverURL)")
         })
         
-        var serverStartError: NSError?
-        server.startWithOptions([
-            GCDWebServerOption_Port: 0,
-            GCDWebServerOption_BonjourType: "_jktest._tcp",
-            GCDWebServerOption_BonjourName: "jktest_iosprovider",
-            ], error: &serverStartError)
-        println("Server started at URL \(server.serverURL). Start error: \(serverStartError)")
+        do {
+            try server.start(options: [
+                GCDWebServerOption_Port: 0,
+                GCDWebServerOption_BonjourType: "_jktest._tcp",
+                GCDWebServerOption_BonjourName: "jktest_iosprovider",
+                ])
+        } catch {
+            print("Server started at URL \(server.serverURL). Start error: \(error)")
+        }
     }
 
 }

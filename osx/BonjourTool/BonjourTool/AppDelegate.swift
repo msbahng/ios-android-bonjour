@@ -11,20 +11,22 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    let windowController = WindowController(windowNibName: "WindowController")
+    var windowController: WindowController?
 
-    func applicationDidFinishLaunching(aNotification: NSNotification) {
-        // Insert code here to initialize your application
-        windowController.showWindow(self)
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        print("applicationDidFinishLaunching")
+    
+        windowController = WindowController(windowNibName: NSNib.Name("WindowController"))
+        windowController?.showWindow(self)
     }
 
-    func applicationWillTerminate(aNotification: NSNotification) {
+    func applicationWillTerminate(aNotification: Notification) {
         // Insert code here to tear down your application
     }
 
-    func applicationShouldHandleReopen(sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        windowController.showWindow(self)
-        return false
-    }
+//    func applicationShouldHandleReopen(sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+//        windowController?.showWindow(self)
+//        return false
+//    }
 }
 

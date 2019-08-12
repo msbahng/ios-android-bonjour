@@ -1,11 +1,9 @@
 package com.example.jaanus.androidprovider;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,12 +18,11 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.Properties;
 
 import fi.iki.elonen.NanoHTTPD;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     private int PORT;
     private MyHTTPD server;
@@ -138,24 +135,24 @@ public class MainActivity extends ActionBarActivity {
         }
 
         // after server is started, register the bonjour service
-        serviceInfo  = new NsdServiceInfo();
+        serviceInfo = new NsdServiceInfo();
         serviceInfo.setServiceName("jktest_androidprovider");
         serviceInfo.setServiceType("_jktest._tcp.");
         serviceInfo.setPort(PORT);
 
-        NsdManager mNsdManager = (NsdManager)this.getApplicationContext().getSystemService(Context.NSD_SERVICE);
+        NsdManager mNsdManager = (NsdManager) this.getApplicationContext().getSystemService(Context.NSD_SERVICE);
 
         mNsdManager.registerService(
                 serviceInfo, NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
 
         // Report the address to UI
-        TextView urlView = (TextView)findViewById(R.id.url);
+        TextView urlView = (TextView) findViewById(R.id.url);
         urlView.setText("Now listening on http://" + getLocalIpAddress() + ":" + Integer.toString(PORT) + "/");
     }
 
     private void stopServer() {
         // unregister the service
-        NsdManager mNsdManager = (NsdManager)this.getApplicationContext().getSystemService(Context.NSD_SERVICE);
+        NsdManager mNsdManager = (NsdManager) this.getApplicationContext().getSystemService(Context.NSD_SERVICE);
         mNsdManager.unregisterService(mRegistrationListener);
 
         // stop server
@@ -166,9 +163,9 @@ public class MainActivity extends ActionBarActivity {
 
     public String getLocalIpAddress() {
         try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
                     if ((inetAddress instanceof Inet4Address) && !inetAddress.isLoopbackAddress()) {
                         // I don’t know how NanoHTTPD, bonjour etc feel about ipv6 addresses
